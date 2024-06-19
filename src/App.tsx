@@ -1,19 +1,30 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState } from "react";
 import "./App.css";
 
-const items = [
-  "JavaScript programming",
-  "HTML and CSS basics",
-  "Frontend development",
-  "Web design principles",
-  "Dynamic content handling",
+interface Item {
+  text: string;
+}
+
+const items: Item[] = [
+  { text: "JavaScript programming" },
+  { text: "HTML and CSS basics" },
+  { text: "Frontend development" },
+  { text: "Web design principles" },
+  { text: "Dynamic content handling" },
 ];
 
 const App: React.FC = () => {
   const [query, setQuery] = useState<string>("");
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
+  };
+
+  const filterItems = (query: string) => {
+    const lowerCaseQuery = query.toLowerCase();
+    return items.filter((item) =>
+      item.text.toLowerCase().includes(lowerCaseQuery)
+    );
   };
 
   const highlightText = (text: string, highlight: string) => {
@@ -22,20 +33,22 @@ const App: React.FC = () => {
     }
     const regex = new RegExp(`(${highlight})`, "gi");
     const parts = text.split(regex);
-    return parts.map((part, index) =>
-      regex.test(part) ? (
-        <span key={index} className="highlight">
-          {part}
-        </span>
-      ) : (
-        part
-      )
+    return (
+      <>
+        {parts.map((part, index) =>
+          regex.test(part) ? (
+            <span key={index} className="highlight">
+              {part}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </>
     );
   };
 
-  const filteredItems = items.filter((item) =>
-    item.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredItems = filterItems(query);
 
   return (
     <div className="App">
@@ -48,7 +61,7 @@ const App: React.FC = () => {
       />
       <ul>
         {filteredItems.map((item, index) => (
-          <li key={index}>{highlightText(item, query)}</li>
+          <li key={index}>{highlightText(item.text, query)}</li>
         ))}
       </ul>
     </div>
