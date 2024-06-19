@@ -1,26 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, ChangeEvent } from "react";
+import "./App.css";
 
-function App() {
+const items = [
+  "JavaScript programming",
+  "HTML and CSS basics",
+  "Frontend development",
+  "Web design principles",
+  "Dynamic content handling",
+];
+
+const App: React.FC = () => {
+  const [query, setQuery] = useState<string>("");
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  };
+
+  const highlightText = (text: string, highlight: string) => {
+    if (!highlight.trim()) {
+      return text;
+    }
+    const regex = new RegExp(`(${highlight})`, "gi");
+    const parts = text.split(regex);
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span key={index} className="highlight">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  const filteredItems = items.filter((item) =>
+    item.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Real-Time Search with Highlighting</h1>
+      <input
+        type="text"
+        placeholder="Search..."
+        value={query}
+        onChange={handleInputChange}
+      />
+      <ul>
+        {filteredItems.map((item, index) => (
+          <li key={index}>{highlightText(item, query)}</li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default App;
